@@ -3,15 +3,6 @@ body {
   background-color: #DEDEDE
 }
 
-div {
-  background-color: #FFFFFF;
-       border-radius:30px;
-       border-width:2px;
-       border-color:black;
-       border-style: solid;
-       width: 500px;
-       height: 1000px;">
-}
 
 h1 {
   color: #FF920D;
@@ -24,4 +15,14 @@ h1 {
 
 h2 {
    text-align: center;
+}
+
+#trending {
+  border-radius:30px;
+  border-width:2px;
+  border-color:
+  black;
+  border-style: solid;
+  width: 500px;
+  height: 1000px;
 }
