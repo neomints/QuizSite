@@ -60,6 +60,11 @@ padding: 0;
   padding-top: 8px;
 }
 
+#dropdown {
+  background-color: #D9534F;
+  border-color: #D43F3A;
+}
+
 .navbar-brand {
   padding-left: 10px;
 }
@@ -70,11 +75,6 @@ padding: 0;
 
 .well {
   float: right;
-}
-
-.buttons {
-  background-color: #D9534F;
-  border-color: #D43F3A;
 }
 
 .box {
