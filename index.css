@@ -1,28 +1,29 @@
 
 body {
-  background-color: #DEDEDE
+  background-color: #DEDEDE;
+  margin: 0;
 }
 
+header {
+  background-color: #FFFF66;
+  height: 50px;
+}
 
-h1 {
-  color: #FF920D;
-  font-family: Impact;
-  padding-left: 100px;
-  padding-right: 100px;
-  font-size: 80px;
+#profilepic {
+  padding-left: 10px;
+  height: 50px;
+  width: 50px;
+  float: left;
+}
+
+#profile {
+  font-size: 10px;
+  padding-top: 10px;
+  font-family: arial;
+}
+
+#logo {
+  margin: none;
   text-align: center;
-}
-
-h2 {
-   text-align: center;
-}
-
-#trending {
-  border-radius:30px;
-  border-width:2px;
-  border-color:
-  black;
-  border-style: solid;
-  width: 500px;
-  height: 1000px;
+  font-size: 100px;
 }
