@@ -65,6 +65,15 @@ padding: 0;
   border-color: #D43F3A;
 }
 
+#steps {
+  padding-left: 10%;
+  font-size: 40px;
+}
+
+.miniheader {
+  padding-left: 5%
+}
+
 .navbar-brand {
   padding-left: 10px;
 }
