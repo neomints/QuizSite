@@ -71,7 +71,14 @@ padding: 0;
 }
 
 .miniheader {
-  padding-left: 5%
+  padding-left: 10%
+}
+
+.minibox {
+  background-color: white;
+  border-width: thick;
+  border-style: solid;
+  border-color: white;
 }
 
 .navbar-brand {
