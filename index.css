@@ -4,6 +4,13 @@ body {
   margin: 0;
 }
 
+h1 {
+   color: #9b73ff;
+   padding-left: 100px;
+   padding-right: 100px;
+   text-align: center;
+}
+
 header {
   background-color: #FFFF66;
   height: 50px;
@@ -20,20 +27,6 @@ header {
   font-size: 10px;
   padding-top: 10px;
   font-family: arial;
-}
-
-
-
-header {
-  background-color: #FFFF66;
-  height: 50px;
-}
-
-#profilepic {
-  padding-left: 10px;
-  height: 50px;
-  width: 50px;
-  float: left;
 }
 
 #profile {
@@ -43,11 +36,5 @@ header {
 }
 
 #one {
-  margin-left: 3%;S
-}
-
-#logo {
-  margin: none;
-  text-align: center;
-  font-size: 100px;
+  margin-left: 3%;
 }
