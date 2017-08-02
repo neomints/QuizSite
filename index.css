@@ -15,3 +15,32 @@ h1 {
   font-size: 80px;
   text-align: center;
 }
+
+body {
+  background-color: #DEDEDE;
+  margin: 0;
+}
+
+header {
+  background-color: #FFFF66;
+  height: 50px;
+}
+
+#profilepic {
+  padding-left: 10px;
+  height: 50px;
+  width: 50px;
+  float: left;
+}
+
+#profile {
+  font-size: 10px;
+  padding-top: 10px;
+  font-family: arial;
+}
+
+#logo {
+  margin: none;
+  text-align: center;
+  font-size: 100px;
+}
