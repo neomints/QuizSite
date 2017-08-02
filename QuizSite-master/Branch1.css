@@ -1,3 +1,6 @@
+html{
+  background-color: #FFE17C;
+}
 #sign_in{
   margin-left:500px;
   margin-top:20px;
@@ -10,6 +13,7 @@ img{
 margin-left:580px;
 margin-top:150px;
 }
-button{
-  margin-left: :520px;
+div.button{
+  margin-left: 590px;
+  margin-top: 10px;
 }
