@@ -1,11 +1,13 @@
 
-body {
-  background-color: #DEDEDE;
-  margin: 0;
+
+h1 {
+   padding-left: 100px;
+   padding-right: 100px;
+   text-align: center;
 }
 
 header {
-  background-color: #FFFF66;
+  background-color: #F8004B;
   height: 50px;
 }
 
@@ -22,8 +24,37 @@ header {
   font-family: arial;
 }
 
-#logo {
-  margin: none;
+#profile {
+  font-size: 10px;
+  padding-top: 10px;
+  font-family: arial;
+}
+
+#one {
+  margin-left: 3%;
+}
+
+#toolbar ul {
+list-style-type: none;
+margin: 0;
+padding: 0;
+
+}
+
+#toolbar body {
+  display: inline;
+}
+
+.navbar-brand {
+  padding-left: 10px;
+}
+
+#toolbar h2 {
   text-align: center;
-  font-size: 100px;
+  margin: 2px;
+  padding-top: 8px;
+}
+
+.navbar navbar-inverse {
+  margin: 20px;
 }
