@@ -1,8 +1,6 @@
 
 body {
-
   background-color: #DEDEDE
-
 }
 
 div {
@@ -11,4 +9,9 @@ div {
 
 h1 {
   color: #FF920D
+  font-family: Impact;
+  padding-left: 100px
+  padding-right: 100px;
+  font-size: 80px;
+  text-align: center;
 }
