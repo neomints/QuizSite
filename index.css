@@ -3,9 +3,6 @@ body {
   background-color: #DEDEDE
 }
 
-div {
-  background-color: #FFFFFF
-}
 
 h1 {
   color: #FF920D
@@ -16,10 +13,6 @@ h1 {
   text-align: center;
 }
 
-body {
-  background-color: #DEDEDE;
-  margin: 0;
-}
 
 header {
   background-color: #FFFF66;
@@ -39,8 +32,6 @@ header {
   font-family: arial;
 }
 
-#logo {
-  margin: none;
-  text-align: center;
-  font-size: 100px;
+#one {
+  margin-left: 3%;S
 }
