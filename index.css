@@ -1,9 +1,14 @@
 
 
 h1 {
+   text-align: center;
    padding-left: 100px;
    padding-right: 100px;
-   text-align: center;
+}
+
+h2 {
+  background-color: white;
+  text-align: center;
 }
 
 header {
@@ -31,8 +36,12 @@ header {
 }
 
 #one {
+  width: 40%;
+  height: 1000px;
+  float:left;
   margin-left: 3%;
 }
+
 
 #toolbar ul {
 list-style-type: none;
@@ -45,16 +54,33 @@ padding: 0;
   display: inline;
 }
 
-.navbar-brand {
-  padding-left: 10px;
-}
-
 #toolbar h2 {
   text-align: center;
   margin: 2px;
   padding-top: 8px;
 }
 
+.navbar-brand {
+  padding-left: 10px;
+}
+
 .navbar navbar-inverse {
   margin: 20px;
+}
+
+.well {
+  float: right;
+}
+
+.buttons {
+  background-color: #D9534F;
+  border-color: #D43F3A;
+}
+
+.box {
+  background-color:#FFFFCC;
+  border-radius:10px;
+  border-width:5px;
+  border-color:#FF6760;
+  border-style: solid;
 }
