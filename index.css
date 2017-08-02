@@ -20,6 +20,7 @@ header {
   font-size: 10px;
   padding-top: 10px;
   font-family: arial;
+<<<<<<< HEAD
 }
 
 
@@ -43,4 +44,12 @@ header {
 
 #one {
   margin-left: 3%;S
+=======
+>>>>>>> origin/master
+}
+
+#logo {
+  margin: none;
+  text-align: center;
+  font-size: 100px;
 }
