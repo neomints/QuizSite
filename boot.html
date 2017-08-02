@@ -10,6 +10,7 @@
 
     <body>
 
+      <!-- colour of dropdown toggle is #F0AD4E -->
 
               <div class="page-header">
               <h1>Trivio</h1>
@@ -20,27 +21,47 @@
 
           <nav class="navbar navbar-inverse">
             <div class="container-fluid">
+
               <div class="navbar-header">
-                <h2><a class="navbar-brand" href="#">Trivio</a></h2>
               </div>
               <ul class="nav navbar-nav">
                 <li><a href="#"><button class="btn btn-danger navbar-btn">Random Quiz Generator</button></a></li>
-                <li class="dropdown"><a class="dropdown-toggle" data-toggle="dropdown" href="#"><button class="btn btn-warning navbar-btn">Categories</button><span class="caret"></span></a>
+              <li class="dropdown"><a class="dropdown-toggle" data-toggle="dropdown" href="#"><button class="btn btn-warning navbar-btn">Categories</button><span class="caret"></span></a>
                   <ul class="dropdown-menu">
                     <li><a href="#">Page 1-1</a></li>
                     <li><a href="#">Page 1-2</a></li>
                     <li><a href="#">Page 1-3</a></li>
                   </ul>
+
+
+
                   <li><a href="#"><button class="btn btn-danger navbar-btn">CREATE</button></a></li>
               </ul>
-              <ul class="nav navbar-nav navbar-right">
+
+      <ul class="nav navbar-nav navbar-right">
                 <form class="navbar-form navbar-left">
                     <div class="form-group">
                     <input type="text" class="form-control" placeholder="Search">
                     </div>
       <button type="submit" class="btn btn-default">Submit</button>
     </ul>
+  </div>
     </nav>
+    <div class="container">
+      <h3>What's your question?</h3>
+      <form>
+        <div class="radio">
+          <label><input type="radio" name="optradio">Option 1</label>
+        </div>
+        <div class="radio">
+          <label><input type="radio" name="optradio">Option 2</label>
+        </div>
+        <div class="radio disabled">
+          <label><input type="radio" name="optradio">Option 3</label>
+        </div>
+      </form>
+    </div>
+
 
 
 

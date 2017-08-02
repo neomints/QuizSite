@@ -7,16 +7,40 @@ padding: 0;
 
 body {
   display: inline;
+  height: 100%;
+  width: 100%;
 }
 
 .navbar-brand {
   padding-left: 10px;
 }
 
+.container-fluid {
+  background-color: #ffff33;
+  border-color: #ffff33;
+
+}
+
+.navbar navbar-inverse {
+  border-color: #ffff33;
+}
+
 h2 {
   text-align: center;
   margin: 2px;
   padding-top: 8px;
+  color: black;
+  font-size: 30px;
+}
+
+h3 {
+  text-align: left;
+}
+
+form {
+  padding-left: 200px;
+  text-align: right;
+  float: right;
 }
 
 .navbar navbar-inverse {
