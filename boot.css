@@ -1,0 +1,24 @@
+ul {
+list-style-type: none;
+margin: 0;
+padding: 0;
+
+}
+
+body {
+  display: inline;
+}
+
+.navbar-brand {
+  padding-left: 10px;
+}
+
+h2 {
+  text-align: center;
+  margin: 2px;
+  padding-top: 8px;
+}
+
+.navbar navbar-inverse {
+  margin: 20px;
+}
