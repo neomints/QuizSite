@@ -58,3 +58,7 @@ padding: 0;
 .navbar navbar-inverse {
   margin: 20px;
 }
+
+.well {
+  float: right; 
+}
