@@ -99,47 +99,46 @@
   </ul>
   </nav>
 
+<!-- end of header and start of quiz making screen-->
+
 <div class="box">
   <h2 style= "font-family: 'Zilla Slab'">WELCOME TO CREATE-A-QUIZ</h2>
   <h3 style= "font-family: 'Zilla Slab'">Steps:</h3>
-    <ol>
-      <li>Choose a font for your heading:</li>
-      <tr>
-        <div class="Fonts"><td>
-          <input type="checkbox"><p style="font-family: Arial;">Arial</p></input>
-        </td>
-      </div>
-<div class="Fonts">
-      <td>
-        <input type="checkbox"><p style= "font-family: Times;">Times</p></input>
-      </td>
-</div>
-    </tr>
-    <tr>
-<div class="Fonts">
-      <td>
-        <input type="checkbox"><p style="font-family: Fantasy;">Fantasy</p></input>
-      </td>
-</div>
-<div class="Fonts">
-      <td>
-        <input type="checkbox"><p style="font-family: Verdana">Verdana</p></input>
-      </td>
-</div>
-    </tr>
-  </ul>
-  <li>Choose Heading Color</li>
-  <ul>
-    <input type="checkbox"><li style="color: red">Red</li></input>
-    <input type="checkbox"><li style="color:blue">Blue</li></input>
-    <input type="checkbox"><li style="color:green">Green</li></input>
-    <input type="checkbox"><li style="color:black">Black</li></input>
-  </ul>
-  <li>Enter your questions</li>
-  <ul>
-    <input type="text" placeholder="Question1"><li></li></input>
-  </ul>
-</ol>
+  <br/>
+  <h2>1.Enter your heading:</h2></br>
+  <input type="text" placeholder="Your Header"></input><br/>
+  <br/>
+  <br/>
+  <form>
+    <h2>2.Choose a font for your heading:</h2>
+    <input type="radio" name="font" id="Arial"><span style="font-family:Arial">Arial</span></input><br/>
+    <input type="radio" name="font" id="Times"><span style="font-family:Times">Times<span></input><br/>
+      <input type="radio" name="font" id="Fantasy"><span style="font-family:Fantasy">Fantasy</span></input><br/>
+      <input type="radio" name="font" id="Verdana"><span style="font-family:Verdana">Verdana</span></input><br/>
+    </form>
+    <h2>3.Choose Heading Color</h2>
+    <form>
+      <input type="radio" name="color" id="red"><span style="color:red">Red</span></input><br/>
+      <input type="radio" name="color" id="blue"><span style="color:blue">Blue</span></input><br/>
+      <input type="radio" name="color" id="green"><span style="color:green">Green</span></input><br/>
+      <input type="radio" name="color" id="black"><span style="color:black">Black<span></input><br/>
+      </form>
+      <h2>4.Enter your first question:</h2>
+      <input type="text" placeholder="Question"></input><br/><br/>
+      <h3>How do you want people to answer?:</h3>
+      <input type="radio" name="Question1">Multiple Choice</input><br/>
+      <input type="radio" name="Question1">Text Answer</input><br/><br/><br/>
+
+      <h2>Keep going until you've had enough!</h2>
+      <input type="text" placeholder="Question"></input><br/><br/>
+      <input type="radio" name="Question2">Multiple Choice</input><br/>
+      <input type="radio" name="Question2">Text Answer</input><br/><br/><br/>
+
+      <input type="text" placeholder="Question"></input><br/><br/></br>
+      <input type="radio" name="Question3">Multiple Choice</input><br/>
+      <input type="radio" name="Question3">Text Answer</input><br/><br/><br/>
+
+      <button type="">Add more questions</button>
 </div>
 
 </body>
