@@ -11,6 +11,10 @@ h2 {
   text-align: center;
 }
 
+p {
+  font-family: 'Zilla Slab';
+}
+
 header {
   background-color: #F8004B;
   height: 50px;
@@ -78,6 +82,7 @@ padding: 0;
   background-color: #FFC78B;
   border-width: thick;
   border-style: solid;
+  border-radius: 10px;
   border-color: #FF6760;
 }
 
