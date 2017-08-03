@@ -1,0 +1,102 @@
+
+
+h1 {
+   text-align: center;
+   padding-left: 100px;
+   padding-right: 100px;
+}
+
+h2 {
+  background-color: white;
+  text-align: center;
+}
+
+header {
+  background-color: #F8004B;
+  height: 50px;
+}
+
+#profilepic {
+  padding-left: 10px;
+  height: 50px;
+  width: 50px;
+  float: left;
+}
+
+#profile {
+  font-size: 10px;
+  padding-top: 10px;
+  font-family: arial;
+}
+
+#profile {
+  font-size: 10px;
+  padding-top: 10px;
+  font-family: arial;
+}
+
+#one {
+  width: 40%;
+  height: 1000px;
+  float:left;
+  margin-left: 3%;
+}
+
+
+#toolbar ul {
+list-style-type: none;
+margin: 0;
+padding: 0;
+
+}
+
+#toolbar body {
+  display: inline;
+}
+
+#toolbar h2 {
+  text-align: center;
+  margin: 2px;
+  padding-top: 8px;
+}
+
+#dropdown {
+  background-color: #D9534F;
+  border-color: #D43F3A;
+}
+
+#steps {
+  padding-left: 10%;
+  font-size: 40px;
+}
+
+.miniheader {
+  padding-left: 10%;
+}
+
+.minibox {
+  background-color: #FFC78B;
+  border-width: thick;
+  border-style: solid;
+  border-color: #FF6760;
+}
+
+.navbar-brand {
+  padding-left: 10px;
+}
+
+.navbar navbar-inverse {
+  margin: 20px;
+}
+
+.well {
+  float: right;
+}
+
+.box {
+  background-color:#FFFFCC;
+  border-radius:10px;
+  border-width:5px;
+  border-color:#FF6760;
+  border-style: solid;
+}
