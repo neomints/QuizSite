@@ -1,0 +1,670 @@
+(function(){if(!/*@cc_on!@*/0)return;var e = "abbr,article,aside,audio,bb,canvas,datagrid,datalist,details,dialog,eventsource,figure,footer,header,hgroup,mark,menu,meter,nav,output,progress,section,time,video".split(',');for(var i=0;i<e.length;i++){document.createElement(e[i])}})()
+$(window).load(function () {
+    $.getScript('http://platform.twitter.com/widgets.js');
+});
+var loadcount = 6;
+$(document).ready(function(){
+    
+    $('#submit_report').click(function(){
+	    var report = $('input:radio[name=violation]:checked').val();
+	    if(!report){
+		    alert("Please pick a reason before submitting a report.");
+		    return false;
+	    }
+	    var url	= $('#report_url').val();
+	    $.ajax({
+			url:	'/ajax/reportPost',
+			type:'post',
+			data:{
+				report:	report,
+				url:		url
+			},
+			success:function(response){
+				$('#report').html('<h3>Thank you!!</h3>');
+				$('#report').fadeOut(1400, 0, function(){
+					$(this).hide();
+				});
+				$('.report').fadeOut(1400, 0, function(){
+					$(this).hide();
+				});
+			}
+	    });
+	    return false;
+    });
+    $('#submit_report_gallery').click(function(){
+	    var report = $('input:radio[name=violation]:checked').val();
+	    if(!report){
+		    alert("Please pick a reason before submitting a report.");
+		    return false;
+	    }
+	    var url	= $('#report_url').val();
+	    $.ajax({
+			url:	'/ajax/reportPostGal',
+			type:'post',
+			data:{
+				report:	report,
+				url:		url
+			},
+			success:function(response){
+				$('#report').html('<h3>Thank you!!</h3>');
+				$('#report').fadeOut(1400, 0, function(){
+					$(this).hide();
+				});
+				$('.report').fadeOut(1400, 0, function(){
+					$(this).hide();
+				});
+			}
+	    });
+	    return false;
+    });
+	
+	$('a.report').click(function(){
+		$('#report').fadeIn();
+		return false;
+	});
+	
+	$('#cancel_report').click(function(){
+		$('#report').fadeOut();
+		return false;
+	});
+	
+	$('.dislike').click(function(){
+		var id = $(this).parent().parent().attr('id').split('_')[1];
+		var that = $(this);
+		$.ajax({
+			url:	'/ajax/dislike',
+			type: "post",
+			data:{
+				id: id
+			},
+			success:function(res){
+				_gaq.push(['_trackEvent', 'Image', 'Likes', 'Dislike']);
+				var responses = $.parseJSON(res);
+				if(responses.redirect) window.location.href = responses.redirect;
+				var response = responses.status;
+				var count = responses.count;
+				if(response=="disliked"){
+					that.parent().find('.like').removeClass('active').addClass('inactive');
+					that.removeClass('inactive').addClass('active');
+				} else if(response=='cancel'){
+					that.parent().find('.like').removeClass('inactive').removeClass('active');
+					that.removeClass('active');
+				}
+				$('#likenum_'+id).html((count?count:0));
+				if(parseInt(count)>0){
+					$('#likenum_'+id).parent().removeClass('neg');
+				} else if(parseInt(count)<0){
+					$('#likenum_'+id).parent().removeClass('neg').addClass('neg');
+				}
+			}
+		});
+		return false;
+	});
+	
+	$('.like').click(function(){
+		var id = $(this).parent().parent().attr('id').split('_')[1];
+		var that = $(this);
+		$.ajax({
+			url:	'/ajax/like',
+			type: "post",
+			data:{
+				id: id
+			},
+			success:function(res){
+				_gaq.push(['_trackEvent', 'Image', 'Likes', 'Like']);
+				var responses = $.parseJSON(res);
+				if(responses.redirect) window.location.href = responses.redirect;
+				var response = responses.status;
+				var count = responses.count;
+				if(response=="liked"){
+					that.parent().find('.dislike').removeClass('active').addClass('inactive');
+					that.removeClass('inactive').addClass('active');
+				} else if(response=='cancel'){
+					that.parent().find('.dislike').removeClass('inactive').removeClass('active');
+					that.removeClass('active');
+				}
+				$('#likenum_'+id).html((count?count:0));
+				if(parseInt(count)>0){
+					$('#likenum_'+id).parent().removeClass('neg');
+				} else if(parseInt(count)<0){
+					$('#likenum_'+id).parent().removeClass('neg').addClass('neg');
+				}
+			}
+		});
+		return false;
+	});
+	
+	$('a.favorite, a.favorited').click(function(){
+		$(this).toggleClass('favorite').toggleClass('favorited');
+		var id = $(this).attr('id').split("_")[1];
+		$.ajax({
+			url:		"/ajax/favorite",
+			type:	"post",
+			data:{
+				id:id
+			},
+			success:function(res){
+				var responses = $.parseJSON(res);
+				if(responses.redirect) window.location.href = responses.redirect;
+			}
+		});
+		return false;
+	});
+	
+	
+	$(document).keydown(function(e){
+		if (e.keyCode === 37) { 
+			$('#left_arrow').trigger('click');
+		} else if(e.keyCode === 39){
+			$('#right_arrow').trigger('click');
+		}
+	});
+
+	$("#left_arrow, #right_arrow").click(function(e) {
+		window.location.href = $(this).attr('href');
+	});
+
+	$('.post').live('click', function(){
+		window.location.href = $(this).find('a').attr('href');
+	});
+	
+	var curpop = 0;
+	var start = 0;
+	popular = $.parseJSON($('#popular_data').val());
+	characters = $.parseJSON($('#character_data').val());
+	
+	if($('#startchar').length)	var startchar = $('#startchar').val();
+	else						var startchar = 0;
+	if(startchar > 0){
+		curpop = startchar;
+		populateCharacterResponse(characters, 'character_list', 'character_first', 'character_next', ENV);
+	}
+	
+	$('#popular_next').click(function(){
+		if($(this).hasClass('disabled')) return false;
+		curpop++;
+		if(curpop > 4) curpop = 4;
+		populateResponse(popular, 'popular_box', 'popular_first', 'popular_next', ENV);
+		return false;
+	});
+	
+	$('#popular_first').click(function(){
+		if($(this).hasClass('disabled')) return false;
+		curpop--;
+		if(curpop < 0) curpop = 0;
+		populateResponse(popular, 'popular_box', 'popular_first', 'popular_next', ENV);
+		return false;
+	});
+	
+	
+	$('#character_next').click(function(){
+		if($(this).hasClass('disabled')) return false;
+		curpop++;
+		populateCharacterResponse(characters, 'character_list', 'character_first', 'character_next', ENV);
+		return false;
+	});
+	
+	$('#character_first').click(function(){
+		if($(this).hasClass('disabled')) return false;
+		curpop--;
+		populateCharacterResponse(characters, 'character_list', 'character_first', 'character_next', ENV);
+		return false;
+	});
+	
+	
+	$('#suggested_next').click(function(){
+		$.ajax({
+			url: '/ajax/random_posts',
+			type: 'post',
+			success:function(response){
+				var data = $.parseJSON(response);
+				populateRandom(data, 'suggested_box', false, ENV);
+			}
+		});
+		
+		return false;
+	});
+	
+	function populateCharacterResponse(data, id, prev, next, ENV){
+		var newhtml = "";
+		start	= curpop*20;
+		var max	= start + 20;
+		var name;
+		var pages = data.length;
+		var maxpages = Math.floor(pages/20);
+		for(var i in data){
+			if(data[i].name.length > 30){
+				name = data[i].name.substr(0,30)+'...';
+			} else {
+				name = data[i].name;
+			}
+			if((i >= start) && (i < max)){
+				newhtml += '<a class="meme_item '+data[i].active+'" rel="'+data[i].name+'" title="'+data[i].name+'" href="/memes/'+data[i].name_url+'">';
+				newhtml += '	<img src="'+ENV+'character/thumb/'+data[i].src+'" alt="'+data[i].alt+'" width="59" height="33">';
+				newhtml += '	<div>'
+				newhtml += '		<p class="char_title">'+name+'</p>'
+				newhtml += '		<p>Images: '+data[i].count+'</p>'
+				newhtml += '	</div>'
+				newhtml += '</a>';
+			}
+		}
+		$('#'+id).html(newhtml);
+		if(prev){
+			if(curpop == 0)	$('#'+prev).addClass('disabled');
+			else				$('#'+prev).removeClass('disabled');
+		}
+		
+		if(next){
+			if(curpop == maxpages)	$('#'+next).addClass('disabled');
+			else					$('#'+next).removeClass('disabled');
+		}
+	}
+	
+	function populateResponse(data, id, prev, next, ENV){
+		var newhtml = "";
+		start	= curpop*3;
+		var max	= start + 3;
+		for(var i in data){
+			if((i >= start) && (i < max)){
+				newhtml += "<div class='post'>";
+				newhtml += "	<img width='130' height='72' src='"+ENV+"meme/thumb/"+data[i].src+"' />"
+				newhtml += '	<div class="post_text">';
+				newhtml += '		<a href="/img/'+data[i].id+'">'+data[i].title+'</a>';
+				newhtml += '		<p class="views">Views '+data[i].views+'</p>';
+				newhtml += '		<p class="likes">Likes '+(data[i].likes?data[i].likes:0)+'</p>';
+				newhtml += '	</div>';
+				newhtml += '</div>';
+			}
+		}
+		$('#'+id).html(newhtml);
+		if(prev){
+			if(curpop == 0)	$('#'+prev).addClass('disabled');
+			else				$('#'+prev).removeClass('disabled');
+		}
+		
+		if(next){
+			if(curpop == 4)	$('#'+next).addClass('disabled');
+			else				$('#'+next).removeClass('disabled');
+		}
+	}
+	
+	
+	function populateRandom(data, id, prev, ENV){
+		var newhtml = "";
+		for(var i in data){
+				newhtml += "<div class='post'>";
+				newhtml += "	<img width='130' height='72' src='"+ENV+"meme/thumb/"+data[i].src+"' />"
+				newhtml += '	<div class="post_text">';
+				newhtml += '		<a href="/img/'+data[i].id+'">'+data[i].title+'</a>';
+				newhtml += '		<p class="views">Views '+data[i].views+'</p>';
+				newhtml += '		<p class="likes">Likes '+(data[i].likes?data[i].likes:0)+'</p>';
+				newhtml += '	</div>';
+				newhtml += '</div>';
+			}
+		$('#'+id).html(newhtml);
+	}
+
+	$('#search').submit(function(){
+		window.location.href = "/search/"+$('#search-input').val();
+		return false;
+	});
+	
+	$('#search2, #memesearch').submit(function(){
+		window.location.href = "/search/"+$('#search-input2').val();
+		return false;
+	});
+	
+	$('#searchgallery').submit(function(){
+		window.location.href = "/searchgallery/"+$('#search-input').val();
+		return false;
+	});
+	$('#searchgalleryhome').submit(function(){
+		window.location.href = "/searchgallery/"+$('#search-input').val();
+		return false;
+	});
+	
+	$('#memesearch #search-input2').keyup(function(){
+		var val = $(this).val().toLowerCase();
+		if(val == ""){
+			populateCharacterResponse(characters, 'character_list', 'character_first', 'character_next', ENV);
+		} else {
+			var newhtml = "";
+			var name;
+			for(var i in characters){
+				if(characters[i].name.toLowerCase().search(val) !== -1){
+					if(characters[i].name.length > 30){
+						name = characters[i].name.substr(0,30)+'...';
+					} else {
+						name = characters[i].name;
+					}
+					newhtml += '<a class="meme_item '+characters[i].active+'" rel="'+characters[i].name+'" title="'+characters[i].name+'" href="/memes/'+characters[i].name_url+'">';
+					newhtml += '	<img src="'+ENV+'character/thumb/'+characters[i].src+'" alt="'+characters[i].alt+'" width="59" height="33">';
+					newhtml += '	<div>'
+					newhtml += '		<p class="char_title">'+name+'</p>'
+					newhtml += '		<p>Images: '+characters[i].count+'</p>'
+					newhtml += '	</div>'
+					newhtml += '</a>';
+				}
+			}
+			$('#character_list').html(newhtml);
+		}
+	});
+	
+	
+	$('#read_less').click(function(){
+		$('.meme_description').animate({"height": "230"}, 200);
+		$('#read_more').show();
+		$('#read_less').hide();
+		return false;
+	});
+	
+	$('#read_more').click(function(){
+		$('.meme_description').animate({"height": "100%"}, 200);
+		$('#read_less').show();
+		$('#read_more').hide();
+		return false;
+	});
+	
+	$('#memezfbshare').click(function(){
+		var id = $(this).parent().attr('id').split('_')[1];
+		$.ajax({
+			url: "/ajax/share",
+			type: 'post',
+			data:{
+				id: id
+			},
+			success: function(response){
+				var shared = parseInt($('#shared_count').html());
+				$('#shared_count').html(++shared);
+			}
+		});
+	});
+	$('.memezfbshare').click(function(){
+		var id = $(this).parent().attr('id').split('_')[1];
+		$.ajax({
+			url: "/ajax/share",
+			type: 'post',
+			data:{
+				id: id
+			},
+			success: function(response){
+				var shared = parseInt($('#shared_count_'+id).html());
+				$('#shared_count_'+id).html(++shared);
+			}
+		});
+	});
+	
+	$('#characterfbshare').click(function(){
+		var id = $(this).parent().attr('id').split('_')[1];
+		$.ajax({
+			url: "/ajax/share_character",
+			type: 'post',
+			data:{
+				id: id
+			},
+			success: function(response){
+				var shared = parseInt($('#shared_count').html());
+				$('#shared_count').html(++shared);
+			}
+		});
+	});
+	
+	$('#memezfbshare_gal').click(function(){
+		var id = $(this).parent().attr('id').split('_')[1];
+		$.ajax({
+			url: "/ajax/share_gallery",
+			type: 'post',
+			data:{
+				id: id
+			},
+			success: function(response){
+				var shared = parseInt($('#shared_count').html());
+				$('#shared_count').html(++shared);
+			}
+		});
+	});
+	
+	$('#popular_tab').click(function(){
+		$('.new_right .sidetile').hide();
+		$('.trendright .sidetile').css("display", "block");
+		$(this).addClass('active');
+		$('#newest_tab').removeClass('active');
+		return false;
+	});
+	
+	$('#newest_tab').click(function(){
+		$('.trendright .sidetile').hide();
+		$('.new_right .sidetile').css("display", "block");
+		$(this).addClass('active');
+		$('#popular_tab').removeClass('active');
+		return false;
+	});
+	
+	if($('.loader').length){
+		
+		scroller();
+		$(document).scroll(function(e){
+			scroller();
+		});
+	}
+	
+	$('#upbutton').click(function(){
+		$("html, body").animate({ scrollTop: 0 }, 600);
+		return false;
+	});
+	
+	if($('.loadspinner').length){
+		$(window).scroll(function(){
+			if ($(this).scrollTop() > 100) {
+				$('#upbutton').fadeIn();
+			} else {
+				$('#upbutton').fadeOut();
+			}
+			if ($(this).scrollTop() > 155) {
+				$('#sidebar').addClass('fixed');
+			} else {
+				$('#sidebar').removeClass('fixed');
+			}
+		});
+	}
+	
+	$('a.playbutton').live('click', function(){
+		var that = $(this);
+		var play = that.find('img.play');
+		play.addClass('spin');
+		var img = that.find('img');
+		that.removeClass('playbutton');
+		var src = img.attr('src');
+		src = src.replace('static/', '');
+		
+		if($(this).hasClass('stillloading')){
+			var src = src.replace('meme/tile', 'original/images');
+		}
+		var loader	= new Image();
+		loader.src	= src;
+		loader.onload = function(){
+			img.attr('src', src);
+			play.remove();
+			$('#imgbox_'+that.attr('id').split('_')[1]+' .hidemark').removeClass('hidemark');
+		}
+		return false;
+	});
+	
+	var heights;
+	var heightclass;
+	if($('#sidebar').hasClass('fixed')){
+		heights = 362;
+		heightclass = 'fixed2';
+	} else {
+		heights = 542;
+		heightclass = 'fixed';
+	}
+	if ($(window).height() < heights) {
+		$('#footer-s').addClass(heightclass);
+	} else {
+		$('#footer-s').removeClass(heightclass);
+	}
+	$(window).resize(function() {
+		if($('#sidebar').hasClass('fixed')){
+			heights = 362;
+			heightclass = 'fixed2';
+		} else {
+			heights = 542;
+			heightclass = 'fixed';
+		}
+		if ($(window).height() < heights) {
+			$('#footer-s').addClass(heightclass);
+		} else {
+			$('#footer-s').removeClass(heightclass);
+		}
+	});
+	
+	var moving = false;
+	var blanket = false;
+	$('#imagecontainer').on('mousedown', function(e) {
+		$(this).data('p0', { x: e.pageX, y: e.pageY });
+		moving = true;
+		return false;
+	});
+	$('#imagecontainer, #target').mousemove(function(event) {
+		if(moving){
+			var p0 = $('#imagecontainer').data('p0');
+			var math = Math.round(Math.sqrt(Math.pow(p0.y - event.pageY, 2) +Math.pow(p0.x - event.pageX, 2)));
+			
+			if(math>30 && blanket==false){
+				blanket = true;
+				$('body').append('<div id="target" style="left:'+p0.x+'px;top:'+p0.y+'px"></div>');
+				$('#blanket').stop(true,true).fadeIn("fast");
+			} else if(math < 31 && blanket==true) {
+				blanket = false;
+				$('#blanket').stop(true,true).fadeOut("fast");
+				$('#target').remove();
+			}
+		}
+	});
+	$('#imagecontainer, #target, body').on('mouseup', function(e) {
+		if(moving){
+			$('#target').remove();
+
+			var p0 = $('#imagecontainer').data('p0'),
+			d = Math.round(Math.sqrt(Math.pow(p0.y - e.pageY, 2) +Math.pow(p0.x - e.pageX, 2)));
+
+			if (d > 30) {
+				var ext = $('#isanimated').val()==1 ? ".gif" : ".jpg";
+				download($('#subject_image').attr('src'), $('#subject_image').attr('title')+ext);
+			}
+			$(this).data('p0', false);
+			moving = false;
+			blanket = false;
+			$('#blanket').stop(true,true).fadeOut("fast");
+		}
+	});
+	
+});
+
+function makearrow(){
+	var img		= new Image();
+	img.src		= '/img/downloader.png';
+	img.onload = function(){
+		 $('#imagecontainer').append("<img id='slidedown' src='/img/downloader.png' width='96' height='126' />");
+		 $('#slidedown').animate({
+			 "top":"60%",
+			 "opacity":"0.5"
+		 }, '500', function(){
+			 $('#slidedown').remove();
+		 });
+	}
+}
+
+function download(uri, name) {
+    function eventFire(el, etype){
+        if (el.fireEvent) {
+            (el.fireEvent('on' + etype));
+        } else {
+            var evObj = document.createEvent('Events');
+            evObj.initEvent(etype, true, false);
+            el.dispatchEvent(evObj);
+        }
+    }
+
+    var link = document.createElement("a");
+    link.download = name;
+    link.href = uri;
+    link.click();
+    makearrow();
+    
+}
+
+
+function element_in_scroll(elem){
+    var docViewTop	= $(window).scrollTop();
+    var docViewBottom = docViewTop + $(window).height();
+    var elemTop = $(elem).offset().top;
+    var elemBottom = elemTop + $(elem).height();
+    return ((elemBottom <= docViewBottom) && (elemTop >= docViewTop));
+}
+var loaders = {};
+function scroller(){
+	if (element_in_scroll("#loader1")) {
+		loadcount +=9;
+		$(document).unbind('scroll');
+		$.ajax({
+			type: "POST",
+			url: '/ajax/scrolldown',
+			data: {
+				loadcount:loadcount,
+				type:$('#imagetype').val()
+			},
+			success:function(res){
+				var result = $.parseJSON(res);
+				if (result) {
+					// Find closest from top, append
+					var curtop, appendto, topdistance;
+					$.each(result, function(i, e){
+						topdistance = 9999999999;
+						$('.loader').each(function(k, v){
+							curtop = $(this).offset().top;
+							if(curtop < topdistance){
+								topdistance = curtop;
+								appendto = $(this).attr('id').split('oader')[1];
+							}
+						});
+						$('#inner'+appendto).append(buildcategory(result[i]));
+						$('.meme.hidden').show();
+					});
+
+				}
+
+				$(document).scroll(function(e){
+					scroller();
+				});
+			}
+		});
+	}
+}
+
+function buildcategory(obj){
+	var playbutton = "";
+	var playbuttonstatic = "";
+	var playbuttonlink = "";
+	if(obj.gif==1) {
+		playbutton += "playbutton";
+		if(obj.queued==1) playbutton += " stillloading";
+		playbuttonstatic += "static/"
+		playbuttonlink += '<img class="play" src="/img/playbutton.png" alt="Play" />';
+	}
+	
+	return '<div style="display: none" class="meme hidden" id="imgbox_'+obj.id+'">\n\
+			<a target="_blank" id="linktoimage_'+obj.id+'" href="/img/'+obj.id+'" title="'+obj.title+'" class="imglink '+playbutton+'">\n\
+				<img id="image_'+obj.id+'" src="'+ENV+'meme/tile/'+playbuttonstatic+obj.src+'" alt="'+obj.title+'" title="'+obj.title+'">\n\
+				'+playbuttonlink+'\n\
+			</a>\n\
+			<p class="memetitle '+obj.display+'">'+obj.title+'</p>\n\
+			<p class="memeowner">'+(obj.name?'Posted by: <a href="/'+obj.username+'">'+obj.name+'</a>':'')+'</p>\n\
+		</div> ';
+}
+
+
+
+
+						

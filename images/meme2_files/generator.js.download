@@ -1,0 +1,1295 @@
+String.prototype.splice = function( idx, rem, s ) {
+    return (this.slice(0,idx) + s + this.slice(idx + Math.abs(rem)));
+};
+String.prototype.trim = function () {
+	return this.replace(/^\s+|\s+$/g,'');
+};
+var locations = {};
+var chars = {};
+var textareas = {};
+var flags = {}
+var curmeme;
+var curmemeid;
+var curfont = 'Impact';
+var curlinewid = 1;
+var drawcanvas, drawctx, flag = false,
+	prevX = 0,
+	currX = 0,
+	prevY = 0,
+	currY = 0,
+	dot_flag = false,
+	drawx = "black",
+	drawy = 4,
+	drawing = false;
+
+var MAX_WIDTH = 600;
+var MAX_HEIGHT = 900;
+var MIN_WIDTH = 400;
+var MIN_HEIGHT = 400;
+var src = false;
+
+jQuery.fn.extend({
+	rotate: function(tid, src){
+		var handle	= $(this).find('.rotator');
+		var rot		= false;
+		var target	= $(this);
+		var pos		= {};
+		
+		target.css('-moz-transform', 'rotate(' + 0 + 'deg)');
+		target.css('-moz-transform-origin', '50% 50%');
+		target.css('-webkit-transform', 'rotate(' + 0 + 'deg)');
+		target.css('-webkit-transform-origin', '50% 50%');
+		target.css('-o-transform', 'rotate(' + 0 + 'deg)');
+		target.css('-o-transform-origin', '50% 50%');
+		target.css('-ms-transform', 'rotate(' + 0 + 'deg)');
+		target.css('-ms-transform-origin', '50% 50%');
+
+		$(handle).mousedown(function(e){
+			rot		= true;
+			var		tw = target.width()/2;
+			if(locations[tid].rotated){
+				pos.x	= e.pageX -	(Math.cos(locations[tid].rotated*Math.PI/180).toFixed(15))*tw + 10;
+				pos.y	= e.pageY -	(Math.sin(locations[tid].rotated*Math.PI/180).toFixed(15))*tw;
+			} else {
+				pos.x	= e.pageX - target.width()/2;
+				pos.y	= e.pageY;
+			}
+			$('body').disableSelection();
+		});
+		$(document).unbind('.rotate'+tid);
+		$(document).bind('mouseup.rotate'+tid, function(){
+			rot		= false;
+			$('body').enableSelection();
+		});
+		$(document).bind('mousemove.rotate'+tid, function(e){
+			if(rot){
+				var mouse_x = e.pageX - pos.x;
+				var mouse_y = e.pageY - pos.y;
+				var radians = Math.atan2(mouse_x + 0, mouse_y - 0);
+				var degree = (radians * (180 / Math.PI) * -1) + 90;
+				target.css('-moz-transform', 'rotate(' + degree + 'deg)');
+				target.css('-moz-transform-origin', '50% 50%');
+				target.css('-webkit-transform', 'rotate(' + degree + 'deg)');
+				target.css('-webkit-transform-origin', '50% 50%');
+				target.css('-o-transform', 'rotate(' + degree + 'deg)');
+				target.css('-o-transform-origin', '50% 50%');
+				target.css('-ms-transform', 'rotate(' + degree + 'deg)');
+				target.css('-ms-transform-origin', '50% 50%');
+				
+				locations[tid].rotated = degree;
+				meme(src);
+			}
+		});
+	}
+});
+var picker = {};
+picker[1] = {};
+picker[2] = {};
+picker[3] = {};
+picker[4] = {};
+picker[5] = {};
+picker[6] = {};
+picker[7] = {};
+picker[8] = {};
+
+picker[1].src = '/cacheimage/?'+encodeURIComponent(ENV2+'svgs/speech1.png');
+picker[1].vertoffset	= "0.01";
+picker[1].vertmultiply	= "1.57";
+picker[1].widthoffset	= "0.01";
+picker[1].widthmultiply	= "1";
+
+picker[2].src = '/cacheimage/?'+encodeURIComponent(ENV2+'svgs/speech2.png');
+picker[2].vertoffset	= "0.25";
+picker[2].vertmultiply	= "2";
+picker[2].widthoffset	= "0.30";
+picker[2].widthmultiply	= "1.55";
+
+picker[3].src = '/cacheimage/?'+encodeURIComponent(ENV2+'svgs/speech3.png');
+picker[3].vertoffset	= "0.25";
+picker[3].vertmultiply	= "2";
+picker[3].widthoffset	= "0.30";
+picker[3].widthmultiply	= "1.55";
+
+picker[4].src = '/cacheimage/?'+encodeURIComponent(ENV2+'svgs/speech4.png');
+picker[4].vertoffset	= "0.03";
+picker[4].vertmultiply	= "1.45";
+picker[4].widthoffset	= "0.03";
+picker[4].widthmultiply	= "1.03";
+
+picker[5].src = '/cacheimage/?'+encodeURIComponent(ENV2+'svgs/speech5.png');
+picker[5].vertoffset	= "0.2";
+picker[5].vertmultiply	= "2";
+picker[5].widthoffset	= "0.30";
+picker[5].widthmultiply	= "1.65";
+
+picker[6].src = '/cacheimage/?'+encodeURIComponent(ENV2+'svgs/speech6.png');
+picker[6].vertoffset	= "0.25"
+picker[6].vertmultiply	= "2";
+picker[6].widthoffset	= "0.30";
+picker[6].widthmultiply	= "1.55";
+
+picker[7].src = '/cacheimage/?'+encodeURIComponent(ENV2+'svgs/speech7.png');
+picker[7].vertoffset	= "0.25";
+picker[7].vertmultiply	= "1.5";
+picker[7].widthoffset	= "0.30";
+picker[7].widthmultiply	= "1.55";
+
+picker[8].src = false;
+picker[8].vertoffset	= "0";
+picker[8].vertmultiply	= "0";
+picker[8].widthoffset	= "0";
+picker[8].widthmultiply	= "1";
+
+
+
+function buildpicker(tid){
+	var div = document.createElement('div');
+	div.ID = "bgpicker-"+tid;
+	div.className = 'bg-objects'
+	var img;
+	for (var key in picker) {
+		var obj = picker[key];
+		if(obj.src){
+			img = document.createElement('img');
+			img.src = obj.src;
+			img.className = 'bg-obj';
+			$(img).attr('vertmultiply', obj.vertmultiply);
+			$(img).attr('vertoffset', obj.vertoffset);
+			$(img).attr('widthmultiply', obj.widthmultiply);
+			$(img).attr('widthoffset', obj.widthoffset);
+			div.appendChild(img);
+			img = null;
+		}
+	}
+	img = document.createElement('div');
+	img.className = 'bg-obj';
+	img.src		= "";
+	div.appendChild(img);
+	img = null;
+	return div;
+}
+
+jQuery.fn.extend({
+	bgpicker: function(tid, src){
+		var handle	= $(this).find('.bgpick');
+		var rot		= false;
+		var target	= $(this);
+		var picker	= buildpicker(tid);
+		target.append(picker);
+		var pick		= $(picker);
+		$(handle).click(function(e){
+			pick.stop(true,true).fadeToggle('fast');
+		});
+		pick.find('.bg-obj').click(function(){
+			pick.stop(true,true).fadeOut('fast');
+			var bgsrc = $(this).attr('src');
+			var vertoffset = $(this).attr('vertoffset');
+			var vertmultiply = $(this).attr('vertmultiply');
+			var widthoffset = $(this).attr('widthoffset');
+			var widthmultiply = $(this).attr('widthmultiply');
+			locations[tid].vertoffset = vertoffset;
+			locations[tid].vertmultiply = vertmultiply;
+			locations[tid].widthoffset = widthoffset;
+			locations[tid].widthmultiply = widthmultiply;
+			locations[tid].bgimgload = new Image();
+			locations[tid].bgimgload.crossOrigin = 'anonymous';
+			locations[tid].bgimgload.src		= bgsrc;
+			meme(src);
+			locations[tid].bgimgload.onload = function(){
+				locations[tid].bg = true;
+				meme(src);
+			}
+		});
+		
+		$('.template_tile img').click(function(){
+			pick.remove();
+		});
+		$('#pickFile').change(function(){
+			pick.remove();
+		});
+	}
+});
+function getCaretPosition (ctrl) {
+	var CaretPos = 0;
+	if (document.selection) {
+	ctrl.focus ();
+		var Sel = document.selection.createRange ();
+		Sel.moveStart ('character', -ctrl.value.length);
+		CaretPos = Sel.text.length;
+	} else if (ctrl.selectionStart || ctrl.selectionStart == '0')
+		CaretPos = ctrl.selectionStart;
+	return (CaretPos);
+}
+function setCaretPosition(ctrl, pos){
+	if(ctrl.setSelectionRange) {
+		ctrl.focus();
+		ctrl.setSelectionRange(pos,pos);
+	} else if (ctrl.createTextRange) {
+		var range = ctrl.createTextRange();
+		range.collapse(true);
+		range.moveEnd('character', pos);
+		range.moveStart('character', pos);
+		range.select();
+	}
+};
+window.meme = function(src){
+	var texts = {};
+	var t, tid;
+	var canvas	= document.getElementById('canvas');
+	var context	= canvas.getContext('2d');
+	var w		= canvas.width;
+	var h		= canvas.height;
+	if (w > h) {
+		if (w > MAX_WIDTH) {
+			h *= MAX_WIDTH / w;
+			w = MAX_WIDTH;
+		} else if(w < MIN_WIDTH){
+			h *= MIN_WIDTH / w;
+			w = MIN_WIDTH;
+		}
+	} else {
+		if (h > MAX_HEIGHT) {
+			w *= MAX_HEIGHT / h;
+			h = MAX_HEIGHT;
+		} else if(h < MIN_HEIGHT){
+			w *= MIN_HEIGHT / h;
+			h = MIN_HEIGHT;
+		}
+	}
+	var maxheight	= 170;
+	var boxheight	= 110;
+	var recoupLeft, recoupTop;
+	curfont	= $('#fontoptions').val();
+	var img		= new Image();
+	//img.crossOrigin = 'anonymous';
+	img.src		= src;
+	img.onload = function(){
+		w = canvas.width = img.width;
+		h = canvas.height = img.height;
+		if (w > h) {
+			if (w > MAX_WIDTH) {
+				h *= MAX_WIDTH / w;
+				w = MAX_WIDTH;
+			} else if(w < MIN_WIDTH){
+				h *= MIN_WIDTH / w;
+				w = MIN_WIDTH;
+			}
+		} else {
+			if (h > MAX_HEIGHT) {
+				w *= MAX_HEIGHT / h;
+				h = MAX_HEIGHT;
+			} else if(h < MIN_HEIGHT){
+				w *= MIN_HEIGHT / h;
+				h = MIN_HEIGHT;
+			}
+		}
+		canvas.width = w;
+		canvas.height = h;
+		$('#containcanvas').css({
+			width: w,
+			height: h
+		});
+		$(".input").each(function(){
+			if(!locations.hasOwnProperty($(this).data('rel'))){
+				if($(this).data('rel') == 'input-2'){
+					$(this).css({top:(h-boxheight-15)})
+				} else if($(this).data('rel') == 'input-1'){
+					$(this).css({top:15})
+				}
+				$(this).draggable({
+					handle: ".drag",
+					scroll: false,
+					start: function (event, ui) {
+						var left = parseInt($(this).css('left'),10);
+						left = isNaN(left) ? 0 : left;
+						var top = parseInt($(this).css('top'),10);
+						top = isNaN(top) ? 0 : top;
+						recoupLeft = left - ui.position.left;
+						recoupTop = top - ui.position.top;
+					},
+					drag:function(event, ui){
+						ui.position.left += recoupLeft;
+						ui.position.top += recoupTop;
+						locations[$(this).data('rel')].top		= ui.position.top;
+						locations[$(this).data('rel')].left	= ui.position.left + locations[$(this).data('rel')].width/2;
+						locations[$(this).data('rel')].height	= $(this).height();
+						locations[$(this).data('rel')].width	= $(this).width();
+						meme(src);
+					},
+					stop:function(event, ui){
+					}
+				}).resizable({
+					handles: "n, s, sw, nw, ne, se",
+					resize:function(event,ui){
+						locations[$(this).data('rel')].top		= ui.position.top;
+						locations[$(this).data('rel')].left	= ui.position.left + locations[$(this).data('rel')].width/2;
+						locations[$(this).data('rel')].height	= $(this).height();
+						locations[$(this).data('rel')].width	= $(this).width();
+						meme(src);
+					}
+				}).css({
+					width: w*.9,
+					left: (w-(w*.9))/2,
+					height: boxheight
+				}).rotate($(this).data('rel'), src);
+				
+				$(this).bgpicker($(this).data('rel'),src)
+				
+				locations[$(this).data('rel')]		= $(this).position();
+				locations[$(this).data('rel')].height	= $(this).height();
+				locations[$(this).data('rel')].width	= $(this).width();
+				locations[$(this).data('rel')].count	= 1;
+				locations[$(this).data('rel')].rotated	= 0;
+				locations[$(this).data('rel')].left	= locations[$(this).data('rel')].left + locations[$(this).data('rel')].width/2;
+			}
+		});
+		
+		context.drawImage(img, 0, 0, w, h);
+		context.fillStyle ="white";
+		context.strokeStyle = 'black';
+		context.font = maxheight+"px "+curfont;
+		context.textAlign = 'center';
+		context.lineWidth = 1;
+		context.textBaseline = 'top';
+		context.lineJoin = 'round';
+		context.translate(0.5, 0.5);
+		
+		var inputs = $('textarea.memeput');
+		inputs.each(function(){
+			tid = $(this).attr('id');
+			
+			if(locations[tid].bg && locations[tid].bgimgload){
+				if(locations[tid].rotated){
+					context.save();
+					context.translate((locations[tid].left+locations[tid].width/2), (locations[tid].top+locations[tid].height/2));
+					context.rotate(locations[tid].rotated*Math.PI/180);
+					
+					var objecty = -locations[tid].height/2;
+					var objectwidth = locations[tid].width;
+					var objectw = objectwidth/2;
+					var currw = -((Math.cos(locations[tid].rotated*Math.PI/180).toFixed(15))/2)*objectw*2 - objectw;
+					var curry = (Math.sin(locations[tid].rotated*Math.PI/180))*objectw + objecty;
+					
+					context.drawImage(locations[tid].bgimgload, currw - locations[tid].width*locations[tid].widthoffset, curry - locations[tid].height*locations[tid].vertoffset, locations[tid].width*locations[tid].widthmultiply, locations[tid].height*locations[tid].vertmultiply);
+					
+					context.restore();
+				} else {
+					context.drawImage(locations[tid].bgimgload, locations[tid].left-locations[tid].width/2 - locations[tid].width*locations[tid].widthoffset, locations[tid].top - locations[tid].height*locations[tid].vertoffset, locations[tid].width*locations[tid].widthmultiply, locations[tid].height*locations[tid].vertmultiply);
+				}
+			}
+			var num = tid.split("-")[1];
+			locations[tid].fonttype = $('#size-'+num).val();;
+			textareas[tid] = $('#write-'+num);
+			context.fillStyle = $('#color-'+num).val();
+			context.strokeStyle = $('#border-'+num).val();
+			curlinewid = $('#linesize-'+num).val();
+			t	= $(this).val();
+			texts[tid] = {};
+			locations[tid].count = 1;
+			locations[tid].fontsize = maxheight;
+			if(locations[tid].fonttype == 'auto'){
+				context.font = locations[tid].fontsize+"px "+curfont;
+			} else {
+				context.font = locations[tid].fonttype+"px "+curfont;
+			}
+			
+			
+			var draw = function (text){
+				if(locations[tid].rotated){
+					context.save();
+					context.translate((locations[tid].left+locations[tid].width/2), (locations[tid].top+locations[tid].height/2));
+					context.rotate(locations[tid].rotated*Math.PI/180);
+				}
+				
+				var reduce = calculate(text, tid, context, w, texts);
+				for(var key in texts[tid]){
+					var o = texts[tid][key];
+					var linewidth = 1;
+					if(locations[tid].fonttype == 'auto'){
+						textareas[tid].css({'font-size': Math.floor(locations[tid].fontsize)});
+						if(curlinewid=='auto'){
+							linewidth = Math.ceil(locations[tid].fontsize / 50);
+						} else {
+							linewidth = curlinewid;
+						}
+					} else {
+						textareas[tid].css({'font-size': Math.floor(locations[tid].fontsize)});
+						if(curlinewid=='auto'){
+							linewidth = Math.ceil(locations[tid].fontsize / 50);
+						} else {
+							linewidth = curlinewid;
+						}
+					}
+						
+					context.lineWidth = (linewidth*4);
+					
+					if(locations[tid].rotated){
+						var objecty = -locations[tid].height/2;
+						var objectwidth = o.w;
+						var objectw = objectwidth/2;
+						var currw = -((Math.cos(locations[tid].rotated*Math.PI/180).toFixed(15))/2)*objectw*2;
+						var curry = (Math.sin(locations[tid].rotated*Math.PI/180))*objectw + objecty + o.y;
+						
+						if(linewidth!=0) context.strokeText(o.t.trim(), currw, curry, objectwidth);
+						context.fillText(o.t.trim(), currw, curry, objectwidth);
+						
+					} else {
+						if(linewidth!=0) context.strokeText(o.t.trim(), o.l, o.y-((key-1)*reduce), o.w);
+						context.fillText(o.t.trim(), o.l, o.y-((key-1)*reduce), o.w);
+					}
+					
+				}
+				if(locations[tid].rotated){
+					context.restore();
+				}
+			}
+			draw(t+" ");
+		});
+	
+		context.drawImage(drawcanvas, 0, 0);
+	}
+}
+
+$(document).ready(function(){
+	init();
+	//$('body').disableSelection();
+	//$('.input, .memeput').enableSelection();
+	$('.close-colorpick, .memeput').live('click', function(){
+		$('.containpick').hide();
+	});
+	$('.colorpick').live('click', function(){
+		var that = $(this);
+		var picker = $(this).parent().parent().find('.containpick');
+		picker.data('picking', that.attr('rel'));
+		picker.fadeIn("fast");
+	});
+	$('.picker div').live('click', function(){
+		$('#'+$(this).parent().parent().data('picking')).val($(this).attr('rel')).parent().find('.colorpick').css({background:$(this).attr('rel')});
+		$(this).parent().parent().hide();
+		meme(src);
+	});
+	$('.picker div').live('mouseover', function(){
+		$('#'+$(this).parent().parent().data('picking')).val($(this).attr('rel')).parent().find('.colorpick').css({background:$(this).attr('rel')});
+		meme(src);
+	});
+	$('.drawpicker div').live('click', function(){
+		$('.drawpicker div').removeClass('active');
+		var thiscolor = $(this).attr('rel');
+		color(thiscolor);
+		if(thiscolor=='eraser') {
+			$('#curcolor').css({background:'transparent', border:'1px dotted #f5989d'});
+			$(this).addClass('active');
+		} else if(thiscolor=='cleardraw'){
+			$('#curcolor').css({background:'#000000',border:'1px solid #ccc'});			
+			$('#defaultcolor').addClass('active');
+			drawcanvas.width = drawcanvas.width;
+			meme(src);
+		} else{ 
+			$('#curcolor').css({background:thiscolor,border:'1px solid #ccc'});
+			$(this).addClass('active');
+		}
+		
+		if(!$('#drawbutton').hasClass('active')){
+			$('#drawbutton').addClass('active');
+			$('#drawcanvas').stop(true,true).fadeIn('fast');
+			$('.input').stop(true,true).fadeOut('fast');
+			drawing = true;
+			$('body').disableSelection();
+		}
+	});
+	
+	$('#search-templates').keyup(function(){
+		var val = $(this).val().toLowerCase();
+		if(val == ""){
+			populateMemeResponse(characters, 'templates');
+			$('#clear').css({visibility:'hidden'});
+		} else {
+			$('#clear').css({visibility:'visible'});
+			chars = {};
+			var newhtml = "";
+			var j = 0;
+			for(var i in characters){
+				chars[i] = characters[i];
+				if(characters[i].name.toLowerCase().search(val) !== -1){
+					newhtml += '<div class="template_tile" rel="/cacheimage/?'+encodeURIComponent(ENV2+'character/meme/'+characters[i].src)+'">';
+					newhtml += '	<img data-group="'+characters[i].id+'" id="dataid_'+characters[i].id+'" src="'+ENV2+'character/tile/'+characters[i].src+'" width="108" height="108" rel="/cacheimage/?'+encodeURIComponent(ENV2+'character/meme/'+characters[i].src)+'" alt="'+characters[i].name+'" title="'+characters[i].name+'" />';
+					//newhtml += '	<a href="#" id="preview_'+(j++)+'" class="preview">Preview</a><a href="#">Select</a>';
+					newhtml += '</div>';
+				}
+			}
+			$('#templates').html(newhtml);
+		}
+	});
+	
+	$('.template_tile img').live('click', function(){
+		$('.choose .step').addClass('inactive');
+		$('.generate .step').removeClass('inactive');
+		src = $(this).parent().attr('rel');
+		
+
+		var imgatt= $(this);
+		var title = imgatt.attr('title');
+		var source= imgatt.attr('rel');
+		curmemeid = imgatt.data('group');
+		var img	= new Image();
+		img.crossOrigin = 'anonymous';
+		img.src	= source;
+		img.onload = function(){
+			var w = img.width;
+			var h = img.height;
+
+			if (w > h) {
+				if (w > MAX_WIDTH) {
+					h *= MAX_WIDTH / w;
+					w = MAX_WIDTH;
+				} else if(w < MIN_WIDTH){
+					h *= MIN_WIDTH / w;
+					w = MIN_WIDTH;
+				}
+			} else {
+				if (h > MAX_HEIGHT) {
+					w *= MAX_HEIGHT / h;
+					h = MAX_HEIGHT;
+				} else if(h < MIN_HEIGHT){
+					w *= MIN_HEIGHT / h;
+					h = MIN_HEIGHT;
+				}
+			}
+
+			var textwidth = 1015 - w - 40;
+			$('.textboxes').css({
+				width: textwidth
+			});
+			$('#builder').css({
+				height: h + 179
+			});
+			$('#meme-title').val(title);
+			$('#meme-title').css({
+				width: w
+			});
+			$('#meme-created .container').css({
+				width: w+20
+			});
+			$('#meme-created').css({
+				width: w+20,
+				height: h+160,
+				marginLeft: -((w+20)/2)
+			});
+			locations = {};
+			meme(src);
+			
+			var drawcanvas	= document.getElementById('drawcanvas');
+			drawcanvas.width	= w;
+			drawcanvas.height	= h;
+
+			$('#chooser').slideUp();
+			$('#builder').slideDown();
+		}
+		return false;
+	});
+	
+	$('.select').live('click', function(){
+		$(this).parent().find('img').trigger('click');
+	});
+	
+	$('.option select').live('change', function(){
+		meme(src);
+	});
+	$('#uploadyourown').click(function(){
+		$('#pickFile').click();
+		return false;
+	});
+	$('.close-modal, #meme-back').click(function(){
+		$('.modalbox').fadeOut();
+		return false;
+	});
+	$('#make-another').click(function(){
+		$('textarea').val("");
+		$('.modalbox').fadeOut();
+		$('.choose .step.inactive').trigger('click');
+	});
+	
+	$('.choose .step.inactive').live('click', function(){
+		$(this).removeClass('inactive');
+		$('.generate .step').addClass('inactive');
+		$('#chooser').slideDown();
+		$('#builder').slideUp();
+	});
+	
+	$('#arewemissing').click(function(){
+		$('#feedback .label').click();
+		return false;
+	});
+	
+	$('textarea.writer').live('mouseup', function(){
+		var input = $('#input-'+$(this).attr('id').split('-')[1]);
+		var pos = getCaretPosition($(this)[0]);
+		setCaretPosition(input[0], pos);
+		$(this).hide();
+	});
+	
+	$(document).live('click', function(e) {
+		if(!$(e.target).is('.writer, .drag, .input')) {
+			$('.writer').hide();
+		}
+	});
+	
+	
+	$('textarea.writer').live('mousedown', function(){
+		if (window.getSelection) {
+			if (window.getSelection().empty) {
+				window.getSelection().empty();
+			} else if (window.getSelection().removeAllRanges) {
+				window.getSelection().removeAllRanges();
+			}
+		} else if (document.selection) {
+			document.selection.empty();
+		}
+	});
+	
+	$('textarea.memeput').keyup(function(){
+		var id = $(this).attr('id').split('-')[1];
+		$('#write-'+id).val($(this).val());
+		meme(src);
+	});
+	$('textarea.memeput').keydown(function(){
+		var id = $(this).attr('id').split('-')[1];
+		$('#write-'+id).val($(this).val());
+		meme(src);
+	});
+	$('textarea.memeput').click(function(){
+		var id = $(this).attr('id').split('-')[1];
+		$('.input').removeClass('topindex');
+		$('#drag-'+id).parent().addClass('topindex');
+	})
+	$('textarea.writer').keyup(function(){
+		var id = $(this).attr('id').split('-')[1];
+		$('#input-'+id).val($(this).val());
+		meme(src);
+	});
+	$('textarea.writer').keydown(function(){
+		var id = $(this).attr('id').split('-')[1];
+		$('#input-'+id).val($(this).val());
+		meme(src);
+	});
+	
+	$('#fontoptions').live('change', function(){
+		meme(src);
+		$('.writer').css({'font-family':curfont});
+	});
+	
+	var drags = $('div.drag');
+	drags.live("click", function(){
+		var id = $(this).attr('id').split('-')[1];
+		var input = $('#write-'+id).show().select();
+	});
+	
+	
+	
+	
+	$('#clear').click(function(){
+		$('#search-templates').val("").trigger('keyup');
+		return false;
+	});
+	
+	$('#create_meme').live('click', function(){
+		meme(src);
+		var c = document.getElementById('canvas')
+		var ctx = c.getContext('2d');
+		var strDataURI = c.toDataURL();
+		$('#direct-link, #short-link, #reddit-link, #img-embed, #img-only').html('Loading...');
+		var title = $('#meme-title').val();
+		var toptext = $('#input-1').val();
+		var bottomtext = $('#input-2').val();
+		var postfb	= 0;
+		if($('#postfb').is(":checked")) postfb = 1;
+		var priv		= 1;
+		if($('#public').is(":checked")) priv = 0;
+		
+		if(!toptext) {
+			alertDialog("You didn't enter a top caption.");
+			return false;
+		}
+		if((!title) || (title == $('#dataid_'+curmemeid).attr('title'))){
+			title = toptext + ' ' + bottomtext;
+		}
+		_gaq.push(['_trackEvent', 'generator', 'generatedmeme',,, false]);
+		
+		$('#created-title span').html(title.substring(0,50));
+		$('#created-image').html("<img src='"+strDataURI+"' />");
+		$.ajax({
+			type:'post',
+			url:'/ajax/memeGenerator',
+			data:{
+				group:curmemeid,
+				title:title,
+				postfb:postfb,
+				house:$('#house').val(),
+				priv:priv,
+				upload_meme:strDataURI
+			},
+			success:function(response){
+				var res = $.parseJSON(response);
+				if(!res.success){
+					var message = res.type ? res.type : "Something went wrong with creating links for sharing. Sorry about that!";
+					alertDialog(message);
+				} else {
+					if($('#facebook_campaign').val() == 1){
+						_gaq.push(['_trackEvent', 'Generator', 'Campaign', 'Facebook']);
+					}
+					if($('#reddit_campaign').val() == 1){
+						_gaq.push(['_trackEvent', 'Generator', 'Campaign', 'Reddit']);
+					}
+					$('#direct-link').html(res.url);
+					$('#short-link').html(res.shorturl);
+					$('#reddit-link').html('['+toptext+']('+res.redditurl+')');
+					$('#img-embed').html('&lt;a href="'+res.shorturl+'" title="Memes.com"&gt;&lt;img src="'+res.imgsrc+'" alt="Memes.com" /&gt;&lt;/a&gt;');
+					$('#img-only').html(res.redditurl);
+					$('#sharenewmeme').attr('href', 'https://www.facebook.com/dialog/share?app_id=580436805305524&action_type=og.share&href='+res.url+'&redirect_uri='+res.url);
+					$('#tweetnewmeme, #redditnewmeme').attr('href', res.url);
+					var twtTitle  = title;
+					var twtUrl    = res.shorturl;
+					var maxLength = 140 - (twtUrl.length + 1);
+					if (twtTitle.length > maxLength) {
+						twtTitle = twtTitle.substr(0, (maxLength - 3))+'...';
+					}
+					var twtLink = 'http://twitter.com/home?status='+encodeURIComponent(twtTitle + ' ' + twtUrl);
+					$('#tweetnewmeme').attr('href', twtLink);
+					var redLink = "http://www.reddit.com/r/AdviceAnimals/submit?url=" + res.redditurl + "&title=" + encodeURIComponent(toptext);
+					$('#redditnewmeme').attr('href', redLink);
+					$('#conversion').attr('src', '//www.googleadservices.com/pagead/conversion/990093571/?value=0&amp;label=Qon4CKX6xAcQg8KO2AM&amp;guid=ON&amp;script=0');
+					var newimg = new Image();
+					newimg.src = res.imgsrc;
+					newimg.onload = function(){
+						$('#created-image').html("<img src='"+res.imgsrc+"' />");
+					}
+				}
+			}
+		});
+		$('#meme-created').fadeIn().animate({
+			"top": $(window).scrollTop()
+		},150);
+	});
+	
+	
+	$('#basictab').click(function(){
+		$('#advancedtab').removeClass('active');
+		$('.advanced').stop(true,true).fadeOut('fast');
+		$('.options, #fonts, #drawbox').stop(true,true).slideUp('fast');
+		$(this).addClass('active');
+	});
+	$('#advancedtab').click(function(){
+		$('#basictab').removeClass('active');
+		$('.advanced').stop(true,true).fadeIn('fast');
+		$('.options, #fonts, #drawbox').stop(true,true).slideDown('fast');
+		$(this).addClass('active');
+	});
+	$('.memeput, #advancedtab, #basictab').click(function(){
+		if($('#drawbutton').hasClass('active')){
+			$('#drawbutton').removeClass('active');
+			$('#drawcanvas').stop(true,true).fadeOut('fast');
+			$('.input').stop(true,true).fadeIn('fast');
+			drawing = false;
+			$('body').enableSelection();
+		}
+	})
+	$('#drawbutton').click(function(){
+		if($(this).hasClass('active')){
+			$(this).removeClass('active');
+			$('#drawcanvas').stop(true,true).fadeOut('fast');
+			$('.input').stop(true,true).fadeIn('fast');
+			drawing = false;
+			$('body').enableSelection();
+			meme(src);
+		} else {
+			$(this).addClass('active');
+			$('#drawcanvas').stop(true,true).fadeIn('fast');
+			$('.input').stop(true,true).fadeOut('fast');
+			drawing = true;
+			$('body').disableSelection();
+		}
+	});
+	$('#drawcanvas').mouseup(function(){
+		meme(src);
+	});
+	$('#drawcanvas').mousemove(function(){
+		if(drawing){
+			meme(src);
+		}
+	});
+	
+	$('.plink').click(function(){
+		selectText($(this).attr('id'));
+	});
+	
+	$('#pickFile').live('change', function(e){
+		var reader = new FileReader();
+		var c = document.getElementById('canvas')
+		var ctx = c.getContext('2d');
+		
+		
+
+		reader.onload = function(event){
+			$('.choose .step').addClass('inactive');
+			$('.generate .step').removeClass('inactive');
+			var img = new Image();
+			img.src	= event.target.result;
+			src		= event.target.result;
+			img.onload = function(){
+				var w = img.width;
+				var h = img.height;
+				
+				if (w > h) {
+					if (w > MAX_WIDTH) {
+						h *= MAX_WIDTH / w;
+						w = MAX_WIDTH;
+					} else if(w < MIN_WIDTH){
+						h *= MIN_WIDTH / w;
+						w = MIN_WIDTH;
+					}
+				} else {
+					if (h > MAX_HEIGHT) {
+						w *= MAX_HEIGHT / h;
+						h = MAX_HEIGHT;
+					} else if(h < MIN_HEIGHT){
+						w *= MIN_HEIGHT / h;
+						h = MIN_HEIGHT;
+					}
+				}
+				
+				c.width = img.width;
+				c.height = img.height;
+				ctx.drawImage(img,0,0);
+				$('#containcanvas').css({
+					width: w,
+					height: h
+				});
+
+
+				var textwidth = 1015 - w - 40;
+				$('.textboxes').css({
+					width: textwidth
+				});
+				$('#builder').css({
+					height: h + 179
+				});
+				$('#meme-title').val("");
+				$('#meme-title').css({
+					width: w
+				});
+				$('#meme-created .container').css({
+					width: w+20
+				});
+				$('#meme-created').css({
+					width: w+20,
+					height: h+160,
+					marginLeft: -((w+20)/2)
+				});
+				locations = {};
+				meme(event.target.result);
+
+				var drawcanvas	= document.getElementById('drawcanvas');
+				drawcanvas.width	= w;
+				drawcanvas.height	= h;
+
+				$('#chooser').slideUp();
+				$('#builder').slideDown();
+			}
+		}
+		reader.readAsDataURL(e.target.files[0]);   
+		$('#pickFile').val('');
+	});
+	
+	$('#feedback .label').click(function(){
+		$('#feedback').toggleClass('active');
+	});
+	
+	var sent = false;
+	$('#submit').click(function(){
+		if(!sent){
+			$.ajax({
+				url:	'/ajax/sendFeedback',
+				type:'post',
+				data:{
+					name:	$('#name').val(),
+					email:	$('#email').val(),
+					message:	$('#message').val()
+				},
+				success:function(response){
+					if(response==1){
+						sent = true;
+						$('#feedback .label').hide();
+						$('#feedback .feedback_content').html('<p class="title">Thank you!</p>');
+						$('#feedback').fadeOut(900, 0, function(){
+							$(this).hide();
+						});
+					} else {
+						$('#feedback .feedback_content .title').html('<p class="title" style="color: #C00;">A message is required.</p>')
+					}
+				}
+			});
+		}
+		return false;
+	});
+	
+	
+	if(!(window.FileReader)) {
+		$('#pickFile').remove();
+		$('#uploadyourown').remove();
+	}
+});
+
+function alertDialog(message){
+	$('#alert-message').html(message);
+	{
+		$( "#dialog-alert" ).dialog({
+			resizable: false,
+			draggable: false,
+			height:140,
+			modal: true,
+			buttons: 
+				[
+					{
+						text: "Okay",
+						"class": "accept",
+						click: function()
+						{
+							$( this ).dialog( "close" );
+						}
+					}
+				]
+		});
+	}
+	return true;
+}
+function createimage(canvas){
+	var canvasData = canvas.toDataURL("image/png");
+}
+function selectText(element) {
+	var doc = document
+		, text = doc.getElementById(element)
+		, range, selection
+	;    
+	if (doc.body.createTextRange) { //ms
+		range = doc.body.createTextRange();
+		range.moveToElementText(text);
+		range.select();
+	} else if (window.getSelection) { //all others
+		selection = window.getSelection();        
+		range = doc.createRange();
+		range.selectNodeContents(text);
+		selection.removeAllRanges();
+		selection.addRange(range);
+	}
+}
+function populateMemeResponse(data, id){
+	var newhtml = "";
+	chars = {};
+	var j = 0;
+	for(var i in data){
+		chars[i] = data[i];
+		newhtml += '<div class="template_tile" rel="/cacheimage/?'+encodeURIComponent(ENV2+'character/meme/'+data[i].src)+'">';
+		newhtml += '	<img data-group="'+data[i].id+'" id="dataid_'+data[i].id+'" src="'+ENV2+'character/tile/'+data[i].src+'" rel="/cacheimage/?'+encodeURIComponent(ENV2+'character/meme/'+data[i].src)+'" width="108" height="108" alt="'+data[i].name+'" title="'+data[i].name+'" />';
+		//newhtml += '	<a href="#" id="preview_'+(j++)+'" class="preview">Preview</a><a href="#">Select</a>';
+		newhtml += '</div>';
+	}
+	$('#'+id).html(newhtml);
+}
+
+function calculate(text, tid, context, w, texts){
+	var words			= text.toUpperCase().split(' ');
+	var line			= '';
+	var doredraw		= false;
+	var y			= locations[tid].top;
+	if(locations[tid].rotated)		y	= 0;
+	else							y	= locations[tid].top;
+	texts[tid]		= {};
+	locations[tid].count= 1;
+		for(var n = 0; n < words.length; n++) {
+			var testLine = line + words[n] + ' ';
+			var metrics = context.measureText(testLine);
+			var testWidth = metrics.width;
+			if (testWidth > locations[tid].width && n > 0) {
+				texts[tid][locations[tid].count] = {};
+				texts[tid][locations[tid].count].t = line;
+				texts[tid][locations[tid].count].y = y;
+				texts[tid][locations[tid].count].w = locations[tid].width;
+				texts[tid][locations[tid].count].l = locations[tid].left;
+				line = words[n] + ' ';
+				if(locations[tid].fonttype == 'auto'){
+					y += locations[tid].fontsize;
+				} else {
+					y += parseInt(locations[tid].fonttype);
+				}
+				locations[tid].count++;
+			} else {
+				line = testLine;
+				texts[tid][locations[tid].count] = {};
+				texts[tid][locations[tid].count].t = line;
+				texts[tid][locations[tid].count].y = y;
+				texts[tid][locations[tid].count].w = locations[tid].width;
+				texts[tid][locations[tid].count].l = locations[tid].left;
+			}
+		}
+		var reduce = 0;
+		if((((locations[tid].count) * locations[tid].fontsize) > (locations[tid].height)) && (locations[tid].fonttype=='auto')){
+			locations[tid].fontsize--;
+			reduce++;
+			context.font = locations[tid].fontsize+"px "+curfont;
+			doredraw = true;
+		}
+		if(doredraw) reduce = calculate(text, tid, context, w, texts);
+	
+	return reduce;
+}
+
+(function() {
+
+var unav = navigator.userAgent.toLowerCase();
+var isWindows = unav.indexOf("windows") != -1;
+var defaultHash = undefined;
+var defaultFont = "Arial";
+var defaultFontSize = "1px";
+var defaultOffsetX = 1;
+var defaultOffsetY = 1;
+var defaultText = undefined;
+var canvas, ctx, width, height;
+
+canvasHelper = {
+	load: function(id, w, h) {
+		if(document.getElementById(id)) {
+			canvas = document.getElementById(id);
+		} else {
+			canvas = document.createElement("canvas");
+			canvas.id = id;
+			canvas.title = id;
+			document.getElementById("fonts").appendChild(canvas);
+		}
+		ctx = canvas.getContext("2d");
+		canvas.width = width = w;
+		canvas.height = height = h;
+	},
+	getHash: function(font) {
+		ctx.clearRect(0, 0, width, height);
+		ctx.fillText(defaultText, defaultOffsetX, defaultOffsetY); 
+		return canvas.toDataURL();
+	},
+	unload: function(id){
+		canvas.parentNode.removeChild(document.getElementById(id));
+	}
+};
+
+isFontSupported = function() {
+	document.getElementById('fonts').appendChild(writeTo);
+	var time = (new Date()).getTime();
+	canvasHelper.load("fontExists", 512, 64);
+	defaultFontSize = "1px";
+	defaultOffsetX = 1;
+	defaultOffsetY = 1;
+	defaultText = "TestFontingQzlx";
+	ctx.font = defaultFontSize + " " + defaultFont + ", " + defaultFont;
+	ctx.fillStyle = "#000000";
+	defaultHash = canvasHelper.getHash();
+	for(var type in fontFamily) {
+		var style = fontFamily[type];
+		for(var font in style) {
+			ctx.font = defaultFontSize + " " + font + ", " + defaultFont;
+			var hash = canvasHelper.getHash();
+			var bool = hash != defaultHash || font == defaultFont;
+			write(bool, font)
+			if(bool) {
+				style[font] = true; // font-exists!
+			}
+		}
+	}
+	canvasHelper.unload('fontExists');
+};
+
+window.onload = function() {
+	isFontSupported();
+};
+
+function getFont(font) {
+	for(var key in fontFamily) {
+		if(font in fontFamily[key]) {
+			if(fontFamily[key][font]) {
+				return font;
+			} else {
+				return defaultFont;
+			}
+		}
+	}
+	return defaultFont;
+	//- if here, do font test, and rerun getFont()
+};
+
+var fontFamily = {
+	'default': {
+	
+	},
+	'serif': {
+		'Georgia': false, // default serif
+		'Cambria': false, 
+		'Cardo': false, 
+		'Constantia': false, 
+		'Crimson Text': false, 
+		'Droid Serif': false, 
+		'IM Fell DW Pica': false, 
+		'OFL Sorts Mill Goudy TT': false, 
+		'Old Standard TT': false, 
+		'Palatino Linotype': false, 
+		'Times New Roman': false, 
+		'Times': false, 
+		'Vollkorn': false
+	},
+	'sans-serif': {
+		'Helvetica': false, // default sans-serif (osx)
+		'Arial': false, // default sans-serif (windows)
+		'Arial Black': false, 
+		'Arial Narrow ': false, 
+		'Calibri': false, 
+		'Cantarell': false, 
+		'Candara': false, 
+		'Corbel': false, 
+		'Droid Sans': false, 
+		'Impact': false, 
+		'Josefin Sans Std Light': false, 
+		'Microsoft Sans Serif': false, 
+		'Molengo': false, 
+		'Nobile': false, 
+		'Tahoma ': false, 
+		'Trebuchet MS': false, 
+		'Verdana': false, 
+		'Yanone Kaffeesatz': false
+	},
+	'cursive': {
+		'Comic Sans MS': false, // default cursive
+		'Lobster': false, 
+		'Reenie Beanie': false, 
+		'Tangerine': false
+	},
+	'fun': {
+		'Webdings': false,
+		'Wingdings': false
+	},
+	'monospace': {
+		'Courier New': false, // default monospace
+		'Andale Mono': false, 
+		'Consolas': false, 
+		'Courier': false, 
+		'Droid Sans Mono': false, 
+		'Inconsolata': false, 
+		'Lucida Console': false
+	}
+};
+
+fontFamily["default"][defaultFont] = true;
+
+var writeTo = document.createElement("select");
+writeTo.id = 'fontoptions';
+var write = function() {
+	var text = "";
+	for (var n = 0, length = arguments.length; n < length; n ++) {
+		if (typeof(arguments[n]) == "boolean") {
+			if(arguments[n]){
+				text += "<option value='";
+			} else {
+				return;
+			}
+		} else {
+			text += arguments[n];
+			if(arguments[n] == 'Impact') text += "' selected='selected";
+			text += "'>" + arguments[n] + "</option>";
+		}
+	}
+	writeTo.innerHTML += text ;
+};
+
+})();
+
+
+function init() {
+	drawcanvas = document.getElementById('drawcanvas');
+	drawctx = drawcanvas.getContext("2d");
+	drawctx.lineCap = "round"
+	w = drawcanvas.width;
+	h = drawcanvas.height;
+
+	drawcanvas.addEventListener("mousemove", function (e) {
+		findxy('move', e)
+	}, false);
+	drawcanvas.addEventListener("mousedown", function (e) {
+		findxy('down', e)
+	}, false);
+	drawcanvas.addEventListener("mouseup", function (e) {
+		findxy('up', e)
+	}, false);
+	drawcanvas.addEventListener("mouseout", function (e) {
+		findxy('out', e)
+	}, false);
+}
+
+// Perhaps handle drawing events on a separate canvas, and merge canvases towards end of meme function.
+// check if possible
+
+
+function color(color) {
+	drawx = color;
+	if (drawx == "eraser"){
+		drawctx.globalCompositeOperation = "destination-out"
+		drawx = 'rgba(0,0,0,1.0)';
+		drawy = 14;
+	} else if(drawx == 'cleardraw') {
+		drawx = '#000000'
+		drawctx.globalCompositeOperation = "source-over"
+		drawy = 4;
+	} else {
+		drawctx.globalCompositeOperation = "source-over"
+		drawy = 4;
+	}
+}
+
+function draw() {
+	if(drawing){
+		drawctx.beginPath();
+		drawctx.moveTo(prevX, prevY);
+		drawctx.lineTo(currX, currY);
+		drawctx.strokeStyle = drawx;
+		drawctx.lineWidth = drawy;
+		drawctx.stroke();
+		drawctx.closePath();
+	}
+}
+
+function findxy(res, e) {
+	if(drawing){
+		if (res == 'down') {
+			prevX = currX;
+			prevY = currY;
+			currY = e.layerY;
+			currX = e.layerX;
+
+			flag = true;
+			dot_flag = true;
+			if (dot_flag) {
+				drawctx.beginPath();
+				drawctx.fillStyle = drawx;
+				drawctx.fillRect(currX, currY, 2, 2);
+				drawctx.closePath();
+				dot_flag = false;
+			}
+		}
+		if (res == 'up' || res == "out") {
+			flag = false;
+		}
+		if (res == 'move') {
+			if (flag) {
+				prevX = currX;
+				prevY = currY;
+				currY = e.layerY;
+				currX = e.layerX;
+				draw();
+			}
+		}
+	}
+}
