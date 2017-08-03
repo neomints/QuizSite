@@ -1,45 +1,45 @@
 <!DOCTYPE html>
 <html>
 
+<link rel="stylesheet" type="text/css" href="index.css">
+<link href='css/bootstrap.css' rel='stylesheet'>
 
-<head>
-<link rel="stylesheet" type="text/css" href="log-in.css">
-<title>Sign In</title>
-<link href="https://fonts.googleapis.com/css?family=Zilla+Slab|Pacifico" rel="stylesheet">
+ <head>
+   <title>Trivio</title>
+
+   <link href="https://fonts.googleapis.com/css?family=Zilla+Slab|Pacifico" rel="stylesheet">
 
 
-<meta name="viewport" content="width=device-width, initial-scale=1">
- <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
- <style>
-   .fa {
-      color: #222222;
-      padding: 20px;
-      font-size: 30px;
-      width: 30px;
-      text-align: center;
-      text-decoration: none;
-      margin: 5px 2px;
-      border-radius: 50%;
+   <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <style>
+      .fa {
+         color: #222222;
+         padding: 20px;
+         font-size: 30px;
+         width: 30px;
+         text-align: center;
+         text-decoration: none;
+         margin: 5px 2px;
+         border-radius: 50%;
+       }
+    fa-facebook {
+         background: #white;
+         color: white;}
+    fa-twitter {
+         color: white;}
     }
- fa-facebook {
-      background: #white;
-      color: white;}
- fa-twitter {
-      color: white;}
- }
- fa-instagram {
-      color: white;}
- }
- fa-snapchat {
-      color: white;}
- }
- fa-tumblr {
-      color: white;}
- }
+    fa-instagram {
+         color: white;}
+    }
+    fa-snapchat {
+         color: white;}
+    }
+    fa-tumblr {
+         color: white;}
+    }
 </style>
 </head>
-
-
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
@@ -65,12 +65,14 @@
 
 
 
-<!-- nav bar -->
+
 
 <nav class="navbar navbar-inverse">
   <div class="container-fluid">
     <div class="navbar-header">
-      <h2><a href="index.html" class="navbar-brand" >Trivio</a></h2>
+
+      <a class="navbar-brand" href="index.html" style="padding-bottom: 10%;">
+        Trivio</a>
     </div>
     <ul class="nav navbar-nav">
       <li><a href="#"><button class="btn btn-danger navbar-btn">Random Quiz Generator</button></a></li>
@@ -96,19 +98,39 @@
 </ul>
 </nav>
 
-<!--end of navbar-->
+<!-- end of header -->
 
+ <div style="
+   width: 30%;
+   margin: 32%;
+   margin-top: 5%;
 
-<div>
-<div id="sign_in"><form action="/action_page.php">
+   background-color: #FFC78B;
+   border-width: 8px;
+   border-style: solid;
+   border-radius: 10px;
+   border-color: #FF6760;"
+   class="minibox">
+
+      <div style="
+      margin:10%;">
+        <div id="sign_in"><form action="/action_page.php">
 <!--profile picture-->
 <!--img src=""-->
-Username:<br/> <input type="text" name="username" placeholder="Enter Username"></br>
-Password:<br/><input type="password" name="password" placeholder="Password"></br></div>
-<!--a href=""--><button type="submit" div_id="sign_in">Log In</button id="login">
-<!--/a-->
-</div>
+        <p style="
+        font-family: 'Zilla slab'">
+        Username:<br/> <input type="text" name="username" placeholder="Enter Username"></br>
+        Password:<br/><input type="password" name="password" placeholder="Password"></br></div>
+        </p>
+<!--a href=""-->
+        <button type="submit" div_id="sign_in">Log In</button id="login">
 
-</body>
+<!--/a-->
+     </div>
+ </div>
+
+
+
+ </body>
+
 </html>
-<!--comments for user specific links-->

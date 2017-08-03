@@ -76,6 +76,15 @@ padding: 0;
   border-color: #D43F3A;
 }
 
+
+.minibox {
+  background-color: #FFC78B;
+  border-width: thick;
+  border-style: solid;
+  border-radius: 10px;
+  border-color: #FF6760;
+}
+
 .navbar-brand {
   padding-left: 10px;
 }
