@@ -16,28 +16,14 @@ header {
   height: 50px;
 }
 
-#profilepic {
-  padding-left: 10px;
-  height: 50px;
-  width: 50px;
-  float: left;
+#caro {
+  height: 500px;
 }
 
-#profile {
-  font-size: 10px;
-  padding-top: 10px;
-  font-family: arial;
-}
-
-#profile {
-  font-size: 10px;
-  padding-top: 10px;
-  font-family: arial;
-}
 
 #one {
   width: 100%;
-  height: 500px;
+  height: 535px;
   float:left;
 }
 
